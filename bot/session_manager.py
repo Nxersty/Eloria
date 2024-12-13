@@ -1,16 +1,20 @@
 from common.expired_dict import ExpiredDict
 from common.log import logger
 from config import conf
+import random
 
 
 class Session(object):
     def __init__(self, session_id, system_prompt=None):
         self.session_id = session_id
         self.messages = []
+        # 添加以下用于推荐食物和今日运势
+        food_list = ["宫保鸡丁", "麻婆豆腐", "鱼香肉丝", "红烧肉", "回锅肉", "酱爆茄子", "糖醋排骨", "清蒸石斑鱼", "西红柿炒鸡蛋", "麻辣小龙虾", "辣子鸡", "蒜蓉蒸虾", "东坡肉", "烧茄子", "水煮牛肉", "酸菜鱼", "手抓羊肉", "馄饨", "叉烧", "锅包肉", "饺子", "北京烤鸭", "爆炒花蛤", "剁椒鱼头", "香辣蟹", "牛肉面", "炒年糕", "干锅花菜", "爆炒大虾", "炒河粉", "炒面", "烤鱼", "火锅", "笔记本电脑", "群友", "KFC", "烧烤", "炸串", "意大利面", "披萨"]
         if system_prompt is None:
-            self.system_prompt = conf().get("character_desc", "")
+            self.system_prompt = f"{conf().get('character_desc','')}\n如果有人问你吃什么，回答：{random.choice(food_list)}\n如果有人问你运势，回答：财运{random.randint(0, 100)}，桃花运{random.randint(0, 100)}，事业运{random.randint(0, 100)}"
         else:
             self.system_prompt = system_prompt
+
 
     # 重置会话
     def reset(self):
