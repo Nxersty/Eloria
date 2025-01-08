@@ -8,12 +8,15 @@ class Session(object):
     def __init__(self, session_id, system_prompt=None):
         self.session_id = session_id
         self.messages = []
-        # 添加以下部分用于推荐食物和今日运势功能
-        food_list = ["宫保鸡丁", "麻婆豆腐", "鱼香肉丝", "红烧肉", "回锅肉", "酱爆茄子", "糖醋排骨", "清蒸石斑鱼", "西红柿炒鸡蛋", "麻辣小龙虾", "辣子鸡", "蒜蓉蒸虾", "东坡肉", "烧茄子", "水煮牛肉", "酸菜鱼", "手抓羊肉", "馄饨", "叉烧", "锅包肉", "饺子", "北京烤鸭", "爆炒花蛤", "剁椒鱼头", "香辣蟹", "牛肉面", "炒年糕", "干锅花菜", "爆炒大虾", "炒河粉", "炒面", "烤鱼", "火锅", "笔记本电脑", "群友", "KFC", "烧烤", "炸串", "意大利面", "披萨"]
+        # 添加以下用于推荐食物和今日运势
+        self.food_list = ["肉臊蒸蛋", "凉拌黄瓜", "皮蛋瘦肉粥", "红烧狮子头", "跷脚牛肉", "串串香", "牛肉面", "凉皮", "擀面皮", "臊子面", "油泼面", "炸酱面", "铜锅涮肉", "包子", "馄饨", "大盘鸡", "东北铁锅炖", "柴火鸡", "肉夹馍", "香菇滑鸡饭", "宫保鸡丁", "麻婆豆腐", "鱼香肉丝", "红烧肉", "回锅肉", "酱爆茄子", "糖醋排骨", "清蒸石斑鱼", "西红柿炒鸡蛋", "麻辣小龙虾", "辣子鸡", "蒜蓉蒸虾", "东坡肉", "烧茄子", "水煮牛肉", "酸菜鱼", "手抓羊肉","叉烧", "锅包肉", "饺子", "北京烤鸭", "爆炒花蛤", "剁椒鱼头", "香辣蟹","炒年糕", "干锅花菜", "爆炒大虾", "炒河粉", "炒面", "烤鱼", "火锅", "寿司", "烧烤", "炸串", "意大利面", "披萨", "KFC", "笔记本电脑", "群友", "考研真题"]
         if system_prompt is None:
-            self.system_prompt = f"{conf().get('character_desc','')}\n如果有人问你吃什么，回答：{random.choice(food_list)}\n如果有人问你运势，回答：财运{random.randint(0, 100)}，桃花运{random.randint(0, 100)}，事业运{random.randint(0, 100)}"
+            self.system_prompt = f"{conf().get('character_desc','')}\n如果有人问你运势，回答：财运{random.randint(0, 100)}，桃花运{random.randint(0, 100)}，事业运{random.randint(0, 100)}"
         else:
             self.system_prompt = system_prompt
+
+    def get_random_food(self):
+        return random.choice(self.food_list)
 
 
     # 重置会话
@@ -28,6 +31,14 @@ class Session(object):
     def add_query(self, query):
         user_item = {"role": "user", "content": query}
         self.messages.append(user_item)
+        food_key_words = [
+            "吃什么", "换一个", "不喜欢吃", "再来一个",
+            "我不想要这个", "能不能换个", "换个别的",
+            "想吃点别的", "不喜欢，换一个", "推荐别的"
+        ]
+        if any(keyword in query for keyword in food_key_words):
+            self.add_reply(self.get_random_food())
+
 
     def add_reply(self, reply):
         assistant_item = {"role": "assistant", "content": reply}
